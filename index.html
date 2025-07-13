@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Celebration</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+    @keyframes spin-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes fall {
+      0% { transform: translateY(-100vh) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+      50% { text-shadow: 0 0 20px rgba(255,255,255,1); }
+    }
+    .float { animation: float 3s ease-in-out infinite; }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    .twinkle { animation: twinkle 1.5s ease-in-out infinite; }
+    .spin-slow { animation: spin-slow 10s linear infinite; }
+    .glow-text { animation: glow 2s ease-in-out infinite; }
+    .gradient-bg {
+      background: linear-gradient(135deg, #6b5b95, #feb47b, #ff7e5f);
+      background-size: 200% 200%;
+      animation: gradient 15s ease infinite;
+    }
+    .star-field {
+      background: radial-gradient(circle, #1a1a2e 0%, #0a0a1e 100%);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .parallax-bg {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const ConfettiParticle = ({ style }) => (
+      <div
+        className="absolute rounded-full"
+        style={{
+          ...style,
+          width: Math.random() * 12 + 8,
+          height: Math.random() * 12 + 8,
+          animation: `fall ${Math.random() * 3 + 2}s linear infinite`,
+          filter: 'blur(1px)',
+          boxShadow: '0 0 10px currentColor'
+        }}
+      />
+    );
+
+    const Star = ({ style }) => (
+      <div
+        className="absolute bg-white rounded-full twinkle"
+        style={{
+          ...style,
+          width: Math.random() * 4 + 2,
+          height: Math.random() * 4 + 2,
+          filter: 'blur(0.5px)'
+        }}
+      />
+    );
+
+    const FloatingBalloon = ({ style }) => (
+      <div
+        className="absolute rounded-full"
+        style={{
+          ...style,
+          width: Math.random() * 60 + 40,
+          height: Math.random() * 80 + 60,
+          animation: `float ${Math.random() * 6 + 4}s ease-in-out infinite`,
+          filter: 'drop-shadow(0 5px 5px rgba(0,0,0,0.3))'
+        }}
+      >
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-20 bg-white opacity-50"></div>
+      </div>
+    );
+
+    const LandingPage = ({ setPage }) => {
+      const [confetti, setConfetti] = useState([]);
+      const [balloons, setBalloons] = useState([]);
+      const titleRef = useRef(null);
+      const buttonRef = useRef(null);
+
+      useEffect(() => {
+        // Create confetti
+        const newConfetti = Array.from({ length: 80 }, () => ({
+          left: `${Math.random() * 100}vw`,
+          top: `${Math.random() * -100}vh`,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+        }));
+        setConfetti(newConfetti);
+
+        // Create balloons
+        const balloonColors = ['#FF5252', '#FF4081', '#E040FB', '#7C4DFF', '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', '#64FFDA', '#69F0AE', '#B2FF59', '#EEFF41', '#FFFF00', '#FFD740', '#FFAB40', '#FF6E40'];
+        const newBalloons = Array.from({ length: 12 }, () => ({
+          left: `${Math.random() * 100}vw`,
+          top: `${Math.random() * 30 + 70}vh`,
+          backgroundColor: balloonColors[Math.floor(Math.random() * balloonColors.length)],
+          animationDelay: `${Math.random() * 3}s`
+        }));
+        setBalloons(newBalloons);
+
+        // GSAP animations
+        gsap.from(titleRef.current, {
+          opacity: 0,
+          y: -50,
+          duration: 1.5,
+          ease: "power3.out"
+        });
+
+        gsap.from(buttonRef.current, {
+          opacity: 0,
+          y: 50,
+          duration: 1.5,
+          delay: 0.5,
+          ease: "elastic.out(1, 0.5)"
+        });
+
+        return () => {
+          gsap.killTweensOf([titleRef.current, buttonRef.current]);
+        };
+      }, []);
+
+      return (
+        <div className="relative w-full min-h-screen gradient-bg overflow-hidden">
+          {confetti.map((particle, index) => (
+            <ConfettiParticle key={`confetti-${index}`} style={particle} />
+          ))}
+          {balloons.map((balloon, index) => (
+            <FloatingBalloon key={`balloon-${index}`} style={balloon} />
+          ))}
+          
+          <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-screen">
+            <header className="text-center mb-12" ref={titleRef}>
+              <h1 className="text-6xl md:text-8xl font-extrabold text-white drop-shadow-lg glow-text">
+                Happy Birthday!
+              </h1>
+              <p className="text-2xl md:text-4xl text-white mt-8 font-serif italic">
+                To My Amazing Friend
+              </p>
+            </header>
+            
+            <main className="max-w-3xl text-center">
+              <div className="glass-card rounded-3xl p-8 shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                <h2 className="text-3xl font-bold text-white mb-6">
+                  A Day to Celebrate You
+                </h2>
+                <p className="text-xl text-white mb-8 leading-relaxed">
+                  Today is all about celebrating the wonderful person you are! 
+                  This special page is just a small token of appreciation for our incredible friendship. 
+                  Here's to many more years of laughter, adventures, and unforgettable memories together!
+                </p>
+                <div ref={buttonRef}>
+                  <button
+                    onClick={() => setPage("celebration")}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-110 shadow-lg pulse"
+                  >
+                    Begin the Celebration
+                  </button>
+                </div>
+              </div>
+            </main>
+            
+            <footer className="mt-16 text-white text-center opacity-80">
+              <p className="text-sm">
+                Crafted with care by your friend | © {new Date().getFullYear()}
+              </p>
+            </footer>
+          </div>
+        </div>
+      );
+    };
+
+    const MemoryCard = ({ title, description, emoji, color }) => {
+      const cardRef = useRef(null);
+      
+      useEffect(() => {
+        gsap.from(cardRef.current, {
+          scrollTrigger: {
+            trigger: cardRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none"
+          },
+          opacity: 0,
+          y: 50,
+          duration: 1,
+          ease: "power2.out"
+        });
+      }, []);
+      
+      return (
+        <div 
+          ref={cardRef}
+          className={`bg-white bg-opacity-10 rounded-2xl p-8 shadow-xl hover:bg-opacity-20 transition-all duration-500 hover:shadow-2xl border-l-4 border-${color}-400`}
+        >
+          <div className="text-4xl mb-4">{emoji}</div>
+          <h2 className="text-2xl font-bold text-white mb-4">{title}</h2>
+          <p className="text-gray-300">{description}</p>
+        </div>
+      );
+    };
+
+    const CelebrationPage = () => {
+      const [stars, setStars] = useState([]);
+      const photoRef = useRef(null);
+      const timelineRef = useRef(null);
+      const sectionRefs = useRef([]);
+
+      useEffect(() => {
+        // Create stars
+        const newStars = Array.from({ length: 150 }, () => ({
+          left: `${Math.random() * 100}vw`,
+          top: `${Math.random() * 100}vh`,
+          animationDelay: `${Math.random() * 2}s`,
+          opacity: Math.random() * 0.8 + 0.2
+        }));
+        setStars(newStars);
+
+        // GSAP animations
+        gsap.from(photoRef.current, {
+          opacity: 0,
+          scale: 0.5,
+          duration: 1.5,
+          ease: "elastic.out(1, 0.3)",
+        });
+
+        // Scroll animations for sections
+        sectionRefs.current.forEach((section, index) => {
+          gsap.from(section, {
+            scrollTrigger: {
+              trigger: section,
+              start: "top 75%",
+              toggleActions: "play none none none"
+            },
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            delay: index * 0.2,
+            ease: "power2.out"
+          });
+        });
+
+        // Initialize ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.refresh();
+
+        return () => {
+          ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        };
+      }, []);
+
+      const addSectionRef = (el) => {
+        if (el && !sectionRefs.current.includes(el)) {
+          sectionRefs.current.push(el);
+        }
+      };
+
+      const memories = [
+        {
+          title: "Our First Adventure",
+          description: "Remember that time we got lost hiking but ended up finding the best view ever? That's when I knew our friendship would be full of unexpected joys. Honestly that never happened but it will soon (: .",
+          emoji: "⛰️",
+          color: "green"
+        },
+        {
+          title: "Late Night Conversations",
+          description: "Those endless talks about life, dreams, and everything in between are some of my favorite memories. Your perspective always makes me think differently.",
+          emoji: "🌙",
+          color: "blue"
+        },
+        {
+          title: "Support Through Challenges",
+          description: "You've been there through thick and thin, offering support without judgment. That's the mark of a true friend. Sweet words are nice, but let's get real, we haven't been through thick nor thin yet, but we'll get there .",
+          emoji: "🤝",
+          color: "purple"
+        },
+        {
+          title: "Future Adventures Await",
+          description: "I can't wait to see what the future holds for our friendship. More trips, more laughs, more memories to create!",
+          emoji: "✨",
+          color: "pink"
+        }
+      ];
+
+      return (
+        <div className="relative w-full star-field">
+          {stars.map((star, index) => (
+            <Star key={`star-${index}`} style={star} />
+          ))}
+          
+          <div className="container mx-auto px-4 py-16">
+            <header className="text-center mb-16">
+              <h1 className="text-5xl md:text-7xl font-extrabold text-white drop-shadow-lg mb-6">
+                Our Friendship Journey
+              </h1>
+              <p className="text-xl text-gray-300 font-serif italic">
+                Celebrating the bond we've built together
+              </p>
+            </header>
+            
+            <main className="max-w-4xl mx-auto">
+              <div className="flex justify-center mb-16">
+                <div ref={photoRef} className="relative group">
+                  <img
+                    src="shams.jpg"
+                    alt="Friends"
+                    className="rounded-full w-72 h-72 object-cover border-4 border-white shadow-2xl group-hover:border-indigo-400 transition-all duration-500"
+                  />
+                  <img
+                    src="genius.jpg"
+                    alt="Friends"
+                    className="rounded-full w-72 h-72 object-cover border-4 border-white shadow-2xl group-hover:border-indigo-400 transition-all duration-500"
+                  />
+                  <div className="absolute inset-0 rounded-full border-4 border-dashed border-indigo-300 spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute -inset-4 rounded-full bg-indigo-500 opacity-0 group-hover:opacity-20 blur-md transition-all duration-500"></div>
+                </div>
+              </div>
+              
+              <section className="space-y-8 mb-24">
+                <h2 className="text-3xl font-bold text-white text-center mb-12" ref={el => addSectionRef(el)}>
+                  Cherished Memories
+                </h2>
+                {memories.map((memory, index) => (
+                  <MemoryCard
+                    key={index}
+                    title={memory.title}
+                    description={memory.description}
+                    emoji={memory.emoji}
+                    color={memory.color}
+                    ref={el => addSectionRef(el)}
+                  />
+                ))}
+              </section>
+              
+              <section className="mb-24" ref={el => addSectionRef(el)}>
+                <div className="glass-card rounded-3xl p-8 text-center">
+                  <h2 className="text-3xl font-bold text-white mb-6">Friendship Timeline</h2>
+                  <div className="relative">
+                    <div className="absolute left-1/2 h-full w-1 bg-indigo-400 transform -translate-x-1/2"></div>
+                    <div className="space-y-12">
+                      {[
+                        { year: "First Met", event: "We crossed paths and started this amazing journey" },
+                        { year: "First Adventure", event: "That unforgettable trip that cemented our bond" },
+                        { year: "Inside Jokes", event: "All those moments that only we find hilarious" },
+                        { year: "Today", event: "Celebrating another year of your wonderful existence" },
+                        { year: "Future", event: "Many more memories waiting to be created" }
+                      ].map((item, index) => (
+                        <div key={index} className="relative pl-16">
+                          <div className="absolute left-1/2 w-6 h-6 rounded-full bg-indigo-500 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center shadow-lg">
+                            <div className="w-4 h-4 rounded-full bg-white"></div>
+                          </div>
+                          <div className="bg-white bg-opacity-10 rounded-xl p-6 shadow-lg">
+                            <h3 className="text-xl font-bold text-white mb-2">{item.year}</h3>
+                            <p className="text-gray-300">{item.event}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+              
+              <section className="text-center mb-16" ref={el => addSectionRef(el)}>
+                <button
+                  onClick={() => {
+                    gsap.to(".memory-card", {
+                      rotationY: 360,
+                      duration: 1,
+                      stagger: 0.2,
+                      ease: "back.out(1.7)",
+                      onComplete: () => {
+                        gsap.set(".memory-card", { clearProps: "rotationY" });
+                      }
+                    });
+                  }}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-4 px-8 rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-110 shadow-lg"
+                >
+                  Relive Our Memories
+                </button>
+              </section>
+              
+              <section className="glass-card rounded-3xl p-8 text-center" ref={el => addSectionRef(el)}>
+                <h2 className="text-3xl font-bold text-white mb-6">Birthday Wishes</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    "May your year be filled with joy and laughter",
+                    "Wishing you success in all your endeavors",
+                    "Hope this year brings you closer to your dreams",
+                    "May our friendship continue to grow stronger",
+                    "Wishing you health, happiness, and adventure",
+                    "Here's to another year of amazing memories"
+                  ].map((wish, index) => (
+                    <div key={index} className="bg-white bg-opacity-10 rounded-xl p-6 hover:bg-opacity-20 transition-all duration-300">
+                      <p className="text-white">{wish}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </main>
+            
+            <footer className="mt-24 text-white text-center opacity-80">
+              <p className="text-sm mb-4">
+                Crafted with care by your friend | © {new Date().getFullYear()}
+              </p>
+              <div className="flex justify-center space-x-4">
+                <button className="text-white hover:text-indigo-300 transition-colors duration-300">
+                  Share
+                </button>
+                <button className="text-white hover:text-indigo-300 transition-colors duration-300">
+                  Save
+                </button>
+                <button className="text-white hover:text-indigo-300 transition-colors duration-300">
+                  Print
+                </button>
+              </div>
+            </footer>
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [page, setPage] = useState("landing");
+      return page === "landing" ? <LandingPage setPage={setPage} /> : <CelebrationPage />;
+    };
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
